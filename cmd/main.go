@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-	// time.Sleep(time.Second * 10)
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file")
