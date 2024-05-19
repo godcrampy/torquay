@@ -2,6 +2,7 @@ package counter
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -11,6 +12,30 @@ import (
 type Counter struct {
 	zkConn *zk.Conn
 	zkPath string
+}
+
+func NewCounterWithRetry(servers []string, path string) (*Counter, error) {
+	const RetryCount = 5
+	const RetryDelayS = 5
+
+	var (
+		c   *Counter
+		err error
+	)
+
+	for attempt := 1; attempt <= RetryCount; attempt++ {
+		c, err = NewCounter(servers, path)
+
+		if err != nil {
+			log.Printf("ERROR: Failed to connect to ZooKeeper (attempt %d/%d): %v", attempt, RetryCount, err)
+			time.Sleep(time.Second * RetryDelayS)
+			continue
+		}
+
+		return c, nil
+	}
+
+	return nil, err
 }
 
 func NewCounter(servers []string, path string) (*Counter, error) {

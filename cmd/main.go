@@ -23,7 +23,7 @@ func main() {
 	servers := []string{os.Getenv("ZOOKEEPER_SERVERS")}
 	zkPath := "/counter"
 
-	c, err := counter.NewCounter(servers, zkPath)
+	c, err := counter.NewCounterWithRetry(servers, zkPath)
 	if err != nil {
 		log.Fatalf("Unable to connect to ZooKeeper: %v", err)
 	}
